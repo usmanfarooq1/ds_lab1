@@ -40,7 +40,7 @@ class DistributedTopology( Topo ):
             sw.append(self.addSwitch("s{}".format(srvID)))
             # add the server
             srv.append(self.addHost("server{}".format(srvID),
-                                    ip=("10.1.0.{}/24".format(srvID))))
+                                    ip=("10.1.0.{}/25".format(srvID))))
             # link server to switch
             self.addLink(sw[srvID-1],
                          srv[srvID-1],
@@ -87,7 +87,7 @@ class Lab():
                              intf=TCIntf,
                              cleanup=True,
                              build=True,
-                             ipBase='10.1.0.0/24')
+                             ipBase='10.1.0.0/25')
         # We connect the network to Internet
         simulation.addNAT().configDefault()
         terms = []
