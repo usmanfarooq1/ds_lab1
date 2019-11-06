@@ -51,14 +51,15 @@ class Server(Bottle):
 
         self.post('/board/<element_id:int>/', callback=self.modifyEntry)
 
-    def  post_index_board(self,dict_data):
+    def  post_index_board(self):
         try:
-            print(dict_data)
+            entry = request.forms.get('data')
+            print(entry)
             if self.blackboard.get_content() == '':
-                self.blackboard.set_content(dict_data)
+                self.blackboard.set_content(entry)
             else:
                 self.blackboard.set_content(
-                    self.blackboard.get_content()+','+dict_data)
+                    self.blackboard.get_content()+','+entry)
                 data = {}
                 data['status_code'] = 200
                 return json.dumps(data)
@@ -178,7 +179,7 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-            self.propagate_to_all_servers('/board_post','POST', new_entry )
+            self.propagate_to_all_servers('/board_post','POST', {'data':new_entry} )
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
