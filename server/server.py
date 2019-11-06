@@ -42,7 +42,8 @@ class Server(Bottle):
         self.route('/', callback=self.index)
         self.get('/board', callback=self.get_board)
         self.post('/board', callback=self.post_index)
-        self.post('/board_post', callback=self.post_index_board)
+        self.post('/board_post', callback=self.post_boardEntry_all_board)
+        self.post('/board_delete_all', callback=self.delete_boardEntry_all_board)
         # self.post('/board', callback=self.post_index)
         # we give access to the templates elements
         self.get('/templates/<filename:path>', callback=self.get_template)
@@ -50,8 +51,19 @@ class Server(Bottle):
         # self.post('/board/<element_id:int>/', callback=self.post_board) # where post_board takes an argument (integer) called element_id
 
         self.post('/board/<element_id:int>/', callback=self.modifyEntry)
-
-    def  post_index_board(self):
+    def delete_boardEntry_all_board(self):
+        try:
+            allContent = request.forms.get('data')
+            self.blackboard.set_content(allContent)
+            data = {}
+            data['status_code'] = 200
+            return json.dumps(data)
+        except Exception as ex:
+            print("[ERROR]"+ str(e))
+            data = {}
+            data['status_code'] = 400
+            return json.dumps(data)
+    def  post_boardEntry_all_board(self):
         try:
             entry = request.forms.get('data')
             print(entry)
@@ -134,6 +146,7 @@ class Server(Bottle):
             return
         else:
             self.deleteEntry(element_id)
+            self.propagate_to_all_servers('/board_delete_all', 'POST', {'data':self.blackboard.get_content()})
             return
 
     def index(self):
