@@ -41,7 +41,8 @@ class Server(Bottle):
         # if you add new URIs to the server, you need to add them here
         self.route('/', callback=self.index)
         self.get('/board', callback=self.get_board)
-        self.post('/', callback=self.post_index)
+        self.post('/board', callback=self.post_index)
+        self.post('/board_post', callback=self.post_index)
         # self.post('/board', callback=self.post_index)
         # we give access to the templates elements
         self.get('/templates/<filename:path>', callback=self.get_template)
@@ -50,6 +51,22 @@ class Server(Bottle):
 
         self.post('/board/<element_id:int>/', callback=self.modifyEntry)
 
+    def  post_index_board(dict_data):
+        try:
+            if self.blackboard.get_content() == '':
+                self.blackboard.set_content(data)
+            else:
+                self.blackboard.set_content(
+                    self.blackboard.get_content()+','+new_entry)
+                data = {}
+                data['status_code'] = 200
+                return json.dumps(data)
+        except Exception as e:
+            print("[ERROR] "+str(e))
+            data = {}
+            data['status_code'] = 400
+            return json.dumps(data)
+            
     def do_parallel_task(self, method, args=None):
         # create a thread running a new task
         # Usage example: self.do_parallel_task(self.contact_another_server, args=("10.1.0.2", "/index", "POST", params_dict))
@@ -82,6 +99,7 @@ class Server(Bottle):
                                     data=params_dict)
             elif 'GET' in req:
                 res = requests.get('http://{}{}'.format(srv_ip, URI))
+                
             # result can be accessed res.json()
             if res.status_code == 200:
                 success = True
@@ -91,7 +109,7 @@ class Server(Bottle):
 
     def propagate_to_all_servers(self, URI, req='POST', params_dict=None):
         for srv_ip in self.servers_list:
-            if srv_ip != self.ip:  # don't propagate to yourself
+            if srv_ip != self.ip :  # don't propagate to yourself
                 success = self.contact_another_server(
                     srv_ip, URI, req, params_dict)
                 if not success:
@@ -159,7 +177,7 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-
+            self.propagate_to_all_servers('/board_post','POST', new_entry )
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
