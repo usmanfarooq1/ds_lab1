@@ -42,7 +42,7 @@ class Server(Bottle):
         self.route('/', callback=self.index)
         self.get('/board', callback=self.get_board)
         self.post('/board', callback=self.post_index)
-        self.post('/board_post', callback=self.post_index)
+        self.post('/board_post', callback=self.post_index_board)
         # self.post('/board', callback=self.post_index)
         # we give access to the templates elements
         self.get('/templates/<filename:path>', callback=self.get_template)
@@ -54,10 +54,10 @@ class Server(Bottle):
     def  post_index_board(dict_data):
         try:
             if self.blackboard.get_content() == '':
-                self.blackboard.set_content(data)
+                self.blackboard.set_content(dict_data)
             else:
                 self.blackboard.set_content(
-                    self.blackboard.get_content()+','+new_entry)
+                    self.blackboard.get_content()+','+dict_data)
                 data = {}
                 data['status_code'] = 200
                 return json.dumps(data)
@@ -177,7 +177,7 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-            self.propagate_to_all_servers('/board_post','POST', new_entry )
+            # self.propagate_to_all_servers('/board_post','POST', new_entry )
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
