@@ -43,6 +43,7 @@ class Server(Bottle):
         self.route('/', callback=self.index)
         self.get('/board', callback=self.get_board)
         self.post('/', callback=self.post_index)
+        # self.post('/board', callback=self.post_index) 
         # we give access to the templates elements
         self.get('/templates/<filename:path>', callback=self.get_template)
         # You can have variables in the URI, here's an example
@@ -121,12 +122,12 @@ class Server(Bottle):
                                                             self.ip),
                         board_dict=board.iteritems())
 
-
     # post on ('/')
     def post_index(self):
         try:
             # we read the POST form, and check for an element called 'entry'
             new_entry = request.forms.get('entry')
+            self.blackboard.set_content(new_entry)
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
