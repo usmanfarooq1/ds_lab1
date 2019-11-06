@@ -116,7 +116,9 @@ class Server(Bottle):
     def get_board(self):
         # we must transform the blackboard as a dict for compatibility reasons
         board = dict()
-        board["0"] = self.blackboard.get_content()
+        blackboardEntries= self.blackboard.get_content().split(',')
+        for i in : range(len(blackboardEntries)):
+            board[str(i)] = blackboardEntries[i]
         return template('server/templates/blackboard.tpl',
                         board_title='Server {} ({})'.format(self.id,
                                                             self.ip),
@@ -127,7 +129,7 @@ class Server(Bottle):
         try:
             # we read the POST form, and check for an element called 'entry'
             new_entry = request.forms.get('entry')
-            self.blackboard.set_content(new_entry)
+            self.blackboard.set_content(self.blackboard.get_content()+','+new_entry)
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
