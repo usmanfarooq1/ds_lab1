@@ -51,7 +51,7 @@ class Server(Bottle):
 
         self.post('/board/<element_id:int>/', callback=self.modifyEntry)
 
-    def  post_index_board(dict_data):
+    def  post_index_board(self,dict_data):
         try:
             print(dict_data)
             if self.blackboard.get_content() == '':
