@@ -43,7 +43,9 @@ class Server(Bottle):
         self.get('/board', callback=self.get_board)
         self.post('/board', callback=self.post_index)
         self.post('/board_post', callback=self.post_boardEntry_all_board)
-        self.post('/board_delete_all', callback=self.delete_boardEntry_all_board)
+        self.post('/board_modify_all',
+                  callback=self.modify_boardEntry_all_board)
+
         # self.post('/board', callback=self.post_index)
         # we give access to the templates elements
         self.get('/templates/<filename:path>', callback=self.get_template)
@@ -51,7 +53,8 @@ class Server(Bottle):
         # self.post('/board/<element_id:int>/', callback=self.post_board) # where post_board takes an argument (integer) called element_id
 
         self.post('/board/<element_id:int>/', callback=self.modifyEntry)
-    def delete_boardEntry_all_board(self):
+
+    def modify_boardEntry_all_board(self):
         try:
             allContent = request.forms.get('data')
             self.blackboard.set_content(allContent)
@@ -59,11 +62,12 @@ class Server(Bottle):
             data['status_code'] = 200
             return json.dumps(data)
         except Exception as ex:
-            print("[ERROR]"+ str(e))
+            print("[ERROR]" + str(e))
             data = {}
             data['status_code'] = 400
             return json.dumps(data)
-    def  post_boardEntry_all_board(self):
+
+    def post_boardEntry_all_board(self):
         try:
             entry = request.forms.get('data')
             print(entry)
@@ -80,7 +84,7 @@ class Server(Bottle):
             data = {}
             data['status_code'] = 400
             return json.dumps(data)
-            
+
     def do_parallel_task(self, method, args=None):
         # create a thread running a new task
         # Usage example: self.do_parallel_task(self.contact_another_server, args=("10.1.0.2", "/index", "POST", params_dict))
@@ -113,7 +117,7 @@ class Server(Bottle):
                                     data=params_dict)
             elif 'GET' in req:
                 res = requests.get('http://{}{}'.format(srv_ip, URI))
-                
+
             # result can be accessed res.json()
             if res.status_code == 200:
                 success = True
@@ -123,31 +127,31 @@ class Server(Bottle):
 
     def propagate_to_all_servers(self, URI, req='POST', params_dict=None):
         for srv_ip in self.servers_list:
-            if srv_ip != self.ip :  # don't propagate to yourself
+            if srv_ip != self.ip:  # don't propagate to yourself
                 success = self.contact_another_server(
                     srv_ip, URI, req, params_dict)
                 if not success:
                     print("[WARNING ]Could not contact server {}".format(srv_ip))
 
     def deleteEntry(self, element_id):
-            modified_list = self.blackboard.get_content().split(',')
-            del modified_list[element_id]
-            self.blackboard.set_content (','.join(modified_list))
-            return
+        modified_list = self.blackboard.get_content().split(',')
+        del modified_list[element_id]
+        self.blackboard.set_content(','.join(modified_list))
+        return
     # route to ('/board')
 
     def modifyEntry(self, element_id):
         # with self.blackboard.lock
         if request.forms.get('delete') == '0':
             modified_entry = request.forms.get('entry')
-            modified_list = self.blackboard.get_content().split(',')     
-            modified_list[element_id] =modified_entry
-            self.blackboard.set_content (','.join(modified_list))
-            return
+            modified_list = self.blackboard.get_content().split(',')
+            modified_list[element_id] = modified_entry
+            self.blackboard.set_content(','.join(modified_list))
+
         else:
             self.deleteEntry(element_id)
-            self.propagate_to_all_servers('/board_delete_all', 'POST', {'data':self.blackboard.get_content()})
-            return
+        self.propagate_to_all_servers(
+            '/board_modify_all', 'POST', {'data': self.blackboard.get_content()})
 
     def index(self):
         # we must transform the blackboard as a dict for compatiobility reasons
@@ -192,7 +196,8 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-            self.propagate_to_all_servers('/board_post','POST', {'data':new_entry} )
+            self.propagate_to_all_servers(
+                '/board_post', 'POST', {'data': new_entry})
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
@@ -210,7 +215,8 @@ class Server(Bottle):
 def main():
     PORT = 80
     # uncomment me before push
-    parser = argparse.ArgumentParser(description='Your own implementation of the distributed blackboard')
+    parser = argparse.ArgumentParser(
+        description='Your own implementation of the distributed blackboard')
     parser.add_argument('--id',
                         nargs='?',
                         dest='id',
