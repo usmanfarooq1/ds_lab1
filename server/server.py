@@ -53,6 +53,7 @@ class Server(Bottle):
 
     def  post_index_board(dict_data):
         try:
+            print(dict_data)
             if self.blackboard.get_content() == '':
                 self.blackboard.set_content(dict_data)
             else:
@@ -177,7 +178,7 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-            # self.propagate_to_all_servers('/board_post','POST', new_entry )
+            self.propagate_to_all_servers('/board_post','POST', new_entry )
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
