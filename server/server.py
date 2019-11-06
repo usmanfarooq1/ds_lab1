@@ -126,7 +126,7 @@ class Server(Bottle):
             blackboardEntries = self.blackboard.get_content().split(',')
             for i in range(len(blackboardEntries)):
                 board[str(i)] = blackboardEntries[i]
-        return template('/templates/index.tpl',
+        return template('server/templates/index.tpl',
                         board_title='Server {} ({})'.format(self.id,
                                                             self.ip),
                         board_dict=board.iteritems(),
@@ -144,7 +144,7 @@ class Server(Bottle):
             for i in range(len(blackboardEntries)):
                 board[str(i)] = blackboardEntries[i]
 
-        return template('templates/blackboard.tpl',
+        return template('server/templates/blackboard.tpl',
                         board_title='Server {} ({})'.format(self.id,
                                                             self.ip),
                         board_dict=board.iteritems())
