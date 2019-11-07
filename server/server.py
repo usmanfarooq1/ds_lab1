@@ -43,7 +43,7 @@ class Server(Bottle):
         self.route('/request', callback=self.checkingRequests)
         self.get('/board', callback=self.get_board)
         self.post('/board', callback=self.post_index)
-        
+
         self.post('/board_post', callback=self.post_boardEntry_all_board)
         self.post('/board_modify_all',
                   callback=self.modify_boardEntry_all_board)
@@ -109,22 +109,23 @@ class Server(Bottle):
         success = False
         try:
             for i in range(5):
-               res = requests.post('http://{}{}'.format(ip, uri),
-                        data={'entry': ip+'-'+str(i)})
+                res = requests.post('http://{}{}'.format(ip, uri),
+                                    data={'entry': ip+'-'+str(i)})
                 print(data_sent)
-                res = requests.post(url,data=data_sent)
+                res = requests.post(url, data=data_sent)
                 res.close()
-            success =True
+            success = True
         except Exception as ex:
-            print ('Error' + str(ex))
+            print('Error' + str(ex))
         return success
 
     def _wrapper_delay_and_execute(self, delay, method, args):
         time.sleep(delay)  # in sec
         method(*args)
+
     def checkingRequests(self):
         for srv_ip in self.servers_list:
-            self.do_parallel_task(self.sendFiveRequests,(srv_ip, "/board"))
+            self.do_parallel_task(self.sendFiveRequests, args=(srv_ip, "/board"))
 
     def contact_another_server(self, srv_ip, URI, req='POST', params_dict=None):
         # Try to contact another serverthrough a POST or GET
