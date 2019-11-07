@@ -148,6 +148,7 @@ class Server(Bottle):
 
         else:
             self.deleteEntry(element_id)
+
         self.do_parallel_task(self.propagate_to_all_servers,args=('/board_modify_all', 'POST', {'data': self.blackboard.get_content()}))
     def index(self):
         # we must transform the blackboard as a dict for compatiobility reasons
@@ -192,8 +193,7 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-           self.do_parallel_task(self.propagate_to_all_servers,args = (
-                '/board_post', 'POST', {'data': new_entry}))  
+            self.do_parallel_task(self.propagate_to_all_servers, args= ('/board_post', 'POST', {'data': new_entry}))  
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
