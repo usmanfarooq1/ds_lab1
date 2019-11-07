@@ -16,20 +16,28 @@ def createServersList(noServers):
 def sendFiveRequests(ip, uri):
     try:
         success = False
-        # for i in range(5):
-        url = 'http://10.1.0.1/board'
-        res = requests.post(url,data={'entry': ip+'-'+str(i)})
-        # success =True
+        for i in range(5):
+            url = 'http://10.1.0.1/board'
+            data_sent ={'entry': ip+'-'+str(i)}
+            print(data_sent)
+            res = requests.post(url,data=data_sent)
+            res.close()
+        success =True
     except Exception as ex:
             print ('Error' + str(ex))
     return success
 
 
 def do_parallel_task(method, args=None):
-    thread = Thread(target=method,
-                    args=args)
-    thread.daemon = True
-    thread.start()
+    try:
+        thread = Thread(name='Thread',target=method,
+                        args=args)
+        thread.daemon = True
+        thread.start()
+        print (thread.getName() + " started")
+    except Exception as ex:
+        print ("ERROR:" + str(ex) )
+
 
 
 def scenerioOne(noServers):
