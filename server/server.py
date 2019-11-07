@@ -41,6 +41,7 @@ class Server(Bottle):
         # if you add new URIs to the server, you need to add them here
         self.route('/', callback=self.index)
         self.route('/request', callback=self.checkingRequests)
+        self.route('/request1', callback=self.checkingRequests1)
         self.get('/board', callback=self.get_board)
         self.post('/board', callback=self.post_index)
 
@@ -105,15 +106,15 @@ class Server(Bottle):
         thread.daemon = True
         thread.start()
 
+    def sendRequests1(self, ip, uri):
+        res = requests.post('http://{}{}'.format(ip, uri),
+                    data={'entry': ip+'-Modify'})
     def sendFiveRequests(self, ip, uri):
         success = False
         try:
             for i in range(5):
                 res = requests.post('http://{}{}'.format(ip, uri),
                                     data={'entry': ip+'-'+str(i)})
-                # print(data_sent)
-                # res = requests.post(url, data=data_sent)
-                # res.close()
             success = True
         except Exception as ex:
             print('Error' + str(ex))
@@ -126,6 +127,12 @@ class Server(Bottle):
     def checkingRequests(self):
         for srv_ip in self.servers_list:
             self.do_parallel_task(self.sendFiveRequests, args=(srv_ip, "/board"))
+
+    def checkingRequests1(self):
+        for srv_ip in self.servers_list:
+            self.do_parallel_task(self.sendFiveRequests, args=(srv_ip, "/board"))
+        for srv_ip in self.servers_list:
+            self.do_parallel_task_after_delay(20,self.sendRequests1,args=(srv_ip , "/board"))
 
     def contact_another_server(self, srv_ip, URI, req='POST', params_dict=None):
         # Try to contact another serverthrough a POST or GET
