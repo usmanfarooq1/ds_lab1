@@ -132,7 +132,7 @@ class Server(Bottle):
         for srv_ip in self.servers_list:
             self.do_parallel_task(self.sendFiveRequests, args=(srv_ip, "/board"))
         for srv_ip in self.servers_list:
-            self.do_parallel_task_after_delay(20,self.sendRequests1,args=(srv_ip , "/board"))
+            self.do_parallel_task_after_delay(20,self.sendRequests1,args=(srv_ip , "/board/0"))
 
     def contact_another_server(self, srv_ip, URI, req='POST', params_dict=None):
         # Try to contact another serverthrough a POST or GET
