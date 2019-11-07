@@ -55,9 +55,7 @@ class Server(Bottle):
         self.post('/board/<element_id:int>/', callback=self.modifyEntry)
 
     def modify_boardEntry_all_board(self):
-        try:
-            allContent = request.forms.get('data')
-            self.blackboard.set_content(allContent)
+        try:r
             data = {}
             data['status_code'] = 200
             return json.dumps(data)
@@ -150,9 +148,7 @@ class Server(Bottle):
 
         else:
             self.deleteEntry(element_id)
-        self.propagate_to_all_servers(
-            '/board_modify_all', 'POST', {'data': self.blackboard.get_content()})
-
+        self.do_parallel_task(self.propagate_to_all_servers,args=('/board_modify_all', 'POST', {'data': self.blackboard.get_content()}))
     def index(self):
         # we must transform the blackboard as a dict for compatiobility reasons
         board = dict()
@@ -196,8 +192,8 @@ class Server(Bottle):
             else:
                 self.blackboard.set_content(
                     self.blackboard.get_content()+','+new_entry)
-            self.propagate_to_all_servers(
-                '/board_post', 'POST', {'data': new_entry})
+           self.do_parallel_task(self.propagate_to_all_servers,args = (
+                '/board_post', 'POST', {'data': new_entry}))  
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
