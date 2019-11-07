@@ -39,3 +39,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     nb_of_servers = int(args.nb_srv)
+    scenerioOne(nb_of_servers)
