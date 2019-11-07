@@ -56,11 +56,13 @@ class Server(Bottle):
 
     def modify_boardEntry_all_board(self):
         try:
+            allContent = request.forms.get('data')
+            self.blackboard.set_content(allContent)
             data = {}
             data['status_code'] = 200
             return json.dumps(data)
         except Exception as ex:
-            print("[ERROR]" + str(e))
+            print("[ERROR]" + str(ex))
             data = {}
             data['status_code'] = 400
             return json.dumps(data)
