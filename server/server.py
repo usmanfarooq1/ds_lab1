@@ -197,6 +197,7 @@ class Server(Bottle):
                     self.blackboard.get_content()+','+new_entry)
             self.do_parallel_task(self.propagate_to_all_servers, args=(
                 '/board_post', 'POST', {'data': new_entry}))
+            self.get_board()
             print("Received: {}".format(new_entry))
         except Exception as e:
             print("[ERROR] "+str(e))
