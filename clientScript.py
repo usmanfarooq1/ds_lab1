@@ -5,6 +5,7 @@ from threading import Lock, Thread
 import time
 import traceback
 
+
 def createServersList(noServers):
     serversList = []
     for i in range(noServers):
@@ -13,9 +14,15 @@ def createServersList(noServers):
 
 
 def sendFiveRequests(ip, uri):
-    for i in range(5):
-        res = requests.post('http://{}{}'.format(ip, uri),
-                            data={'entry': ip+str(i)})
+    try:
+        success = False
+        for i in range(5):
+            url = 'http://{}:80{}'.format(ip, uri)
+            res = requests.post(url,data={'entry': ip+str(i)})
+        success =True
+    except Exception as ex:
+            print ('Error' + str(ex))
+    return success
 
 
 def do_parallel_task(method, args=None):
