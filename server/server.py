@@ -111,7 +111,7 @@ class Server(Bottle):
             for i in range(5):
                 res = requests.post('http://{}{}'.format(ip, uri),
                                     data={'entry': ip+'-'+str(i)})
-                print(data_sent)
+                # print(data_sent)
                 # res = requests.post(url, data=data_sent)
                 # res.close()
             success = True
