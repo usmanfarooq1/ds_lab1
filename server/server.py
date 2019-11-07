@@ -112,8 +112,8 @@ class Server(Bottle):
                 res = requests.post('http://{}{}'.format(ip, uri),
                                     data={'entry': ip+'-'+str(i)})
                 print(data_sent)
-                res = requests.post(url, data=data_sent)
-                res.close()
+                # res = requests.post(url, data=data_sent)
+                # res.close()
             success = True
         except Exception as ex:
             print('Error' + str(ex))
