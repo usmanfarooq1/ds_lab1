@@ -108,7 +108,7 @@ class Server(Bottle):
 
     def sendRequests1(self, ip, uri):
         res = requests.post('http://{}{}'.format(ip, uri),
-                    data={'entry': ip+'-Modify'})
+                    data={'entry': ip+'-Modify', 'delete':'0'})
     def sendFiveRequests(self, ip, uri):
         success = False
         try:
