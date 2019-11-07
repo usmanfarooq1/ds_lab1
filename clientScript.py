@@ -16,10 +16,10 @@ def createServersList(noServers):
 def sendFiveRequests(ip, uri):
     try:
         success = False
-        for i in range(5):
-            url = 'http://{}:80{}'.format(ip, uri)
-            res = requests.post(url,data={'entry': ip+str(i)})
-        success =True
+        # for i in range(5):
+        url = 'http://10.1.0.1/board'
+        res = requests.post(url,data={'entry': ip+'-'+str(i)})
+        # success =True
     except Exception as ex:
             print ('Error' + str(ex))
     return success
